@@ -8,7 +8,7 @@ import (
 const (
 	apiPort      = ":3610"
 	apiSecretKey = "8116fdd3f12b6d7c4b136cbdaa3360a57eb4eb676ae63294450ee1f4f34b36f3"
-	// sha256(0x764aeebcf425d56800ef2c84f2578689415a2daa)
+	// sha256("0x764aeebcf425d56800ef2c84f2578689415a2daa")
 	// https://etherscan.io/address/0x764aeebcf425d56800ef2c84f2578689415a2daa
 	finalResult = "22bec8b0f5a4318f6f88bd2fb0b0e04081c887e105574838d639943e254e521f"
 )

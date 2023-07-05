@@ -7,7 +7,7 @@ import (
 
 const (
 	apiPort = ":3369"
-	// sha256(Il n'y a que les imbéciles qui ne changent pas d'avis)
+	// sha256("Il n'y a que les imbéciles qui ne changent pas d'avis")
 	secretKey = "ca32652906af8dd747e741cd3e960338138099b0615e62b4f23366cf65f52646"
 )
 
