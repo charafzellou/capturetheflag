@@ -1,3 +1,3 @@
 module capturetheflag-01
 
-go 1.20
+go 1.21
