@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha1"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -42,24 +42,36 @@ func getHint(w http.ResponseWriter, r *http.Request) {
 						switch rand {
 						case 0:
 							// hint := wikidata.org/wiki/Q13414952
-							// hint := "Q 13 41 49 52"
-							hint = "Q DC3 ) 1 4"
+							// hint := "ASCII MD5 - Q 18 52 35"
+							nRand := genRand(0, 1)
+							if nRand == 0 {
+								hint = "This is clearly not a binary : 81 49 56 53 50 51 53"
+							} else {
+								hint = "Did you know that Wikimedia Commons has more subdomains than Google ?"
+							}
 						case 1:
-							// hint := https://store.steampowered.com/app/724490/Protocol/
+							// hint := https://steamdb.info/app/724490/
 							// hint := "App ID : 724490"
-							hint = "App ID : 724490"
+							hint = "Dabatase App : 72 44 90"
 						case 2:
-							// hint := "https://www.linternaute.fr/proverbe/cgi/recherche/recherche.php?f_motcle=imb%E9cile&lance_recherche.x=0&lance_recherche.y=0&f_action_recherche=0"
-							// hint := "https://tinyurl.com/ctf-esgi-5A"
-							hint = "Tiny ctf esgi 5A"
+							// hint := "https://fortrabbit.github.io/quotes/"
+							// hint := "https://tinyurl.com/ctf-esgi-20230929"
+							nRand := genRand(0, 2)
+							if nRand == 0 {
+								hint = "Tiny Path [ctf-school-????????]"
+							} else if nRand == 1 {
+								hint = "Today is a good day innit ?"
+							} else {
+								hint = "Don't copy paste everything you see on the Web"
+							}
 						case 3:
-							// hint := "https://pastebin.com/cSfXHMvB"
+							// hint := "https://pastebin.com/5FPprcvF"
 							// hint := T75f91DQ2C
 							// hint := "Struct FullRequest"
-							hint = "CopyTrash cSfXHMvB T75f91DQ2C"
+							hint = "Copy Trash 5FPprcvF-T75f91DQ2C"
 						}
 						// convert the hash to a string
-						fmt.Fprintf(w, "Coward over here asking for hints...\nnHere you go, your random hint:\n%s", hint)
+						fmt.Fprintf(w, "Coward over here asking for hints...\nHere you go, your random hint:\n%s", hint)
 						return
 					} else {
 						log.Printf("User secret does not match the one in the map: %s\n", data.Secret)
@@ -89,7 +101,7 @@ func getChallenge(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		printTraffic(r)
 
-		var data AuthRequest
+		var data FullRequest
 		// Parse the JSON body
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 			http.Error(w, "Failed to parse JSON body", http.StatusBadRequest)
@@ -107,11 +119,12 @@ func getChallenge(w http.ResponseWriter, r *http.Request) {
 					if usersSecrets[data.User] == data.Secret {
 						log.Printf("User secret matches the one in the map: %s\n", data.Secret)
 						usersPoints[data.User]--
-						// calculate SHA1 of "data.User + usersSecrets[data.User] + usersPoints[data.User]"
-						hash := sha1.New()
+						// calculate MD5 of "data.User + usersSecrets[data.User] + usersPoints[data.User]"
+						hash := md5.New()
 						hash.Write([]byte(data.User + usersSecrets[data.User] + fmt.Sprint(usersPoints[data.User])))
 						// convert the hash to a string
 						challenge := fmt.Sprintf("%x", hash.Sum(nil))
+						fmt.Println("Hashed Challenge is as follows", challenge)
 						log.Printf("Welcome to the challenge !\nHere is your first Challenge:\n%s\nDon't forget that:%s\n", challenge, secretKey)
 						fmt.Fprintf(w, "Welcome to the challenge !\nHere is your first Challenge:\n%s\nDon't forget that:%s\n", challenge, secretKey)
 						return
@@ -166,7 +179,7 @@ func submitChallenge(w http.ResponseWriter, r *http.Request) {
 							if data.Content.Challenge.Username == data.User {
 								if data.Content.Challenge.Secret == usersSecrets[data.User] {
 									if data.Content.Challenge.Points == usersPoints[data.User] {
-										if data.Content.Protocol == "SHA-1" {
+										if data.Content.Protocol == "MD5" {
 											if data.Content.SecretKey == originKey {
 												writeLogFile(fmt.Sprintf("User: %s\nPoints: %d\nLevel: %d\nProtocol: %s\nSecretKey: %s\n", data.User, usersPoints[data.User], data.Content.Level, data.Content.Protocol, data.Content.SecretKey))
 												writeResultFile(fmt.Sprintf("User: %s\nPoints: %d\nLevel: %d\nSecretKey: %s\n", data.User, usersPoints[data.User], data.Content.Level, data.Content.SecretKey))

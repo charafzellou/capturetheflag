@@ -27,7 +27,6 @@ func genRandPort(low int, high int) string {
 }
 
 func printTraffic(r *http.Request) {
-	// log.Printf("r.Host: %s\n", r.Host)
 	log.Printf("r.RemoteAddr: %s\n", r.RemoteAddr)
 	log.Printf("r.Method: %s\n", r.Method)
 }

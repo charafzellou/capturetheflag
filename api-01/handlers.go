@@ -9,6 +9,7 @@ import (
 )
 
 func handlerPing(w http.ResponseWriter, r *http.Request) {
+	randomWinner := genRand(1, 30)
 	level++
 	log.Printf("_______________\n")
 	log.Printf("handlerPing called:\n")
@@ -16,7 +17,12 @@ func handlerPing(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		printTraffic(r)
-		fmt.Fprintf(w, "pong")
+		if randomWinner == 1 {
+			log.Printf("randomWinner: %s\n", r.RemoteAddr)
+			fmt.Fprintf(w, "pong... ping pong... Maybe you should create a new user...")
+		} else {
+			fmt.Fprintf(w, "pong")
+		}
 		return
 	} else {
 		printTraffic(r)
@@ -48,11 +54,11 @@ func handlerSignup(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if len(data.User) < 4 {
 			log.Printf("User name is too short: %s\n", data.User)
-			http.Error(w, "User name is too short", http.StatusBadRequest)
+			http.Error(w, "User name is too short, but keep hope, one day, you will get your user to level up", http.StatusBadRequest)
 			return
 		} else if len(data.User) > 12 {
 			log.Printf("User name is too long: %s\n", data.User)
-			http.Error(w, "User name is too long", http.StatusBadRequest)
+			http.Error(w, "User name is too long, once you got it figured out, maybe try to get your user's secret ?", http.StatusBadRequest)
 			return
 		} else {
 			// Add the user to the array
@@ -139,7 +145,12 @@ func handlerSecret(w http.ResponseWriter, r *http.Request) {
 				// check if the user is in the map
 				if _, ok := usersSecrets[data.User]; ok {
 					log.Printf("User secret found: %s\n", usersSecrets[data.User])
-					fmt.Fprintf(w, "User secret: %s\n", usersSecrets[data.User])
+					randNumberSpoofer := genRand(1, 10)
+					if randNumberSpoofer < 4 {
+						fmt.Fprintf(w, "User secret: %s\n", usersSecrets[data.User])
+					} else {
+						fmt.Fprintf(w, "Really don't feel like working today huh...")
+					}
 					return
 				} else {
 					log.Printf("User not found in the map: %s\n", data.User)
